@@ -1,0 +1,81 @@
+###
+
+POST http://localhost:4000/user/loan/create HTTP/1.1
+
+{
+    "Loan_type": "Kabayan",
+    "Customer_id": 10,        
+    "Cust_name": "Luthfan Zul Fahmi",           
+    "Cust_phonenumber": "+6282233174107",    
+    "Cust_address": "Jl. Cisitu Indah Baru No.9, Bandung",        
+    "Monthly_income": 5000000,       
+    "Nominal_borrowed": 35000000,    
+    "Loan_period_m": 24,       
+    "Annual_interest_rate": 0.09
+}
+
+###
+GET http://localhost:4000/user/loan/listall HTTP/1.1
+
+###
+PUT http://localhost:4000/user/loan/update?id=4 HTTP/1.1
+
+{
+    "Monthly_income":5000000,
+    "Nominal_borrowed":60000000,
+    "Loan_period_m":60
+}
+
+
+###
+DELETE http://localhost:4000/user/loan/delete?id=4 HTTP/1.1
+
+
+################################################################################
+################################################################################
+################################################################################
+
+
+###
+POST http://localhost:4000/user/account/create HTTP/1.1
+
+{
+    "Cust_email":"luthfanzuf@gmail.com",
+    "Cust_country_code":"+62",
+    "Cust_phone":"+6282233174107",
+    "Salt":"",
+    "Hashpass":"",
+    "Access_token":"",
+    "Cust_firstname":"Ihdhar",
+    "Cust_lastname":"Nur Sidqi",
+    "Cust_address":"Rungkut Asri Timur",
+    "Date_of_birth":"1998-01-13",
+    "Identity_type":"KTP",
+    "Identity_number":"3578031203940001",
+    "Identity_scan_url":"",
+    "Bank_name":"Mandiri",
+    "Bank_account_number":"",
+    "Account_book_scan_url":""
+}
+
+###
+GET http://localhost:4000/user/account/listall HTTP/1.1
+
+
+
+###
+
+PUT http://localhost:4000/user/account/update?id=3 HTTP/1.1
+
+{       
+    "Cust_firstname": "Rama",
+    "Cust_lastname": "Nurdian",          
+    "Cust_address": "Bendul Merisi"        
+}
+
+
+###
+
+DELETE http://localhost:4000/user/account/delete?id=4 HTTP/1.1
+
+###

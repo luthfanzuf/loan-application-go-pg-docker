@@ -20,10 +20,5 @@ func (app *Application) routes() *http.ServeMux {
 	router.HandleFunc("/user/loan/update", cust.UpdateLoanApplication)  //v customer bisa mengedit pengjuan pinjaman yang pernah dibuat dan belum disetujui
 	router.HandleFunc("/user/loan/delete", cust.DeleteLoanApplication)  //v customer bisa menghapus pengajuan pinjaman yang pernah dibuat dan belum disetujui
 
-	// internal route //work in progress
-	// router.HandleFunc("/employee/loan/listall", employee.GetAllLoanApplication)
-	// router.HandleFunc("/employee/cust/listall", employee.GetAllLoanApplication)
-	// // router.HandleFunc("/internal/loan/id/pass", employee.GetAllLoanApplication)
-
 	return router
 }

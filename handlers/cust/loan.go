@@ -199,15 +199,6 @@ func DeleteLoanApplication(rw http.ResponseWriter, r *http.Request) {
 
 		json.NewEncoder(rw).Encode(loanToDelete)
 
-		// for index, obj := range arrLoan {
-		// 	if obj.Application_id == idToDelete {
-		// 		// splice and replace the todo
-		// 		arrLoan = append(arrLoan[:index], arrLoan[index+1:]...)
-
-		// 		json.NewEncoder(rw).Encode(arrLoan[index])
-		// 	}
-		// }
-
 	}
 
 }

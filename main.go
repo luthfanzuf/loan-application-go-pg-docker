@@ -42,7 +42,6 @@ func main() {
 	app := &Application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
-		//snippets: &models.SnippetModel{DB: db},
 	}
 
 	//
@@ -59,7 +58,4 @@ func main() {
 	}
 
 	srv.ListenAndServe()
-
-	//log.Fatal(http.ListenAndServe(":4000", routerMiddleware))
-
 }

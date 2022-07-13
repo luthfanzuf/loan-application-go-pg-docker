@@ -20,7 +20,7 @@
 `/user/account/listall` employee bisa melihat semua list akun didatabase <br>
 `/user/loan/listall` employee bisa melihat semua pengajuan didatabase <br>
 
-#### Testing bisa mengguankan file `request.rest` yang memanfaatkan [ekstensi REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) di VS Code. <br>
+#### Testing bisa menggunakan file `request.rest` yang memanfaatkan [ekstensi REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) di VS Code. <br>
 
 
 ### ERD bisa melihat:

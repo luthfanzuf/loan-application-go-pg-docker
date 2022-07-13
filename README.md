@@ -4,6 +4,10 @@
 
 `docker-compose up -d --build`
 
+### Go Application Docker Image
+
+`docker pull luthfanzuf/los-go-pg-docker:latest`
+
 #### Fitur Yang Tersedia:
 `/user/account/create` customer bisa membuat akun/profil baru <br>
 `/user/account/update` customer bisa memperbarui akun/profil <br>

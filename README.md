@@ -4,7 +4,7 @@
 
 `docker-compose up -d --build`
 
-### Go Application Docker Image
+#### Go Application Docker Image
 
 `docker pull luthfanzuf/los-go-pg-docker:latest`
 

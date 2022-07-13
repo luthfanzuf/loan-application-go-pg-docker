@@ -8,8 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
-	z "vanilla-loan-application/ctx"
+	ctx "vanilla-loan-application/ctx"
 
 	"gorm.io/gorm"
 )
@@ -41,6 +40,14 @@ type CustomerAccountProfile struct {
 	Profile_verified      bool      `json:"profile_verified"`
 }
 
+func HomeHandler(rw http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		rw.Header().Add("Content-Type", "application/json")
+		rw.Header().Add("Access-Control-Allow-Origin", "*")
+		json.NewEncoder(rw).Encode("Hello World!")
+	}
+}
+
 func CreateCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		rw.Header().Add("Content-Type", "application/json")
@@ -50,8 +57,7 @@ func CreateCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 
 		json.NewDecoder(r.Body).Decode(&applicationObj)
 
-		// create to local Array
-
+		// kalkulasi data berdasarkan data di request body
 		t1 := time.Now().Year()
 		t2, err := time.Parse("2006-01-02", applicationObj.Date_of_birth)
 		if err != nil {
@@ -60,6 +66,7 @@ func CreateCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 		}
 		ageCalc := (t1 - t2.Year())
 
+		// membuat object baru untuk di insert
 		objToInsert := CustomerAccountProfile{
 			Cust_email:            applicationObj.Cust_email,
 			Cust_country_code:     applicationObj.Cust_country_code,
@@ -87,13 +94,13 @@ func CreateCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
 		}
-		// GORM create ################################################
 
+		// GORM create ################################################
 		result := db.Create(&objToInsert)
 		if err := result.Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -104,6 +111,7 @@ func CreateCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 		}
 		// ##############################################################
 
+		// show response
 		json.NewEncoder(rw).Encode(objToInsert)
 
 	}
@@ -116,16 +124,19 @@ func GetAllCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Access-Control-Allow-Origin", "*")
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
 		}
 
+		// array of object
 		var arrAccountProfile []CustomerAccountProfile
 
+		// gorm get all
 		result := db.Find(&arrAccountProfile)
 
+		// error handling
 		if err := result.Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				json.NewEncoder(rw).Encode(arrAccountProfile)
@@ -138,6 +149,7 @@ func GetAllCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// show response
 		json.NewEncoder(rw).Encode(arrAccountProfile)
 
 	}
@@ -149,11 +161,12 @@ func UpdateCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")
 		rw.Header().Add("Access-Control-Allow-Origin", "*")
 
+		// mendapatkan id yang mau diedit
 		query := r.URL.Query()
 		idToEdit, _ := strconv.Atoi(query.Get("id"))
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
@@ -172,6 +185,7 @@ func UpdateCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 		newLN := newAccountProfile.Cust_lastname
 		newADDR := newAccountProfile.Cust_address
 
+		// gorm update
 		db.Model(oldAccountProfile).Updates(CustomerAccountProfile{
 			Cust_firstname: newFN,
 			Cust_lastname:  newLN,
@@ -189,6 +203,7 @@ func DeleteCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")
 		rw.Header().Add("Access-Control-Allow-Origin", "*")
 
+		// mendapatkan id object yg akan di delete dengan query strings
 		query := r.URL.Query()
 		idToDelete, _ := strconv.Atoi(query.Get("id"))
 
@@ -196,17 +211,20 @@ func DeleteCustomerAccount(rw http.ResponseWriter, r *http.Request) {
 			Cust_id: idToDelete,
 		}
 
+		// console log id yg akan didelete
 		log.Printf("Delete Account Handler is triggered for id :%s", strconv.Itoa(idToDelete))
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
 		}
 
+		// gorm delete
 		db.Delete(&CustomerAccountProfile{}, idToDelete)
 
+		// show response
 		json.NewEncoder(rw).Encode(accProfDeleted)
 
 	}

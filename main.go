@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	dbase "vanilla-loan-application/db"
 )
 
 type Application struct {
@@ -25,7 +26,7 @@ func main() {
 
 	// initialize database
 	dbConnString := "postgres://root:123@postgres:5432/loan-app-db?sslmode=disable"
-	db, err := DBConnect(dbConnString)
+	db, err := dbase.DBConnect(dbConnString)
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("failed to create connection database")
@@ -49,7 +50,7 @@ func main() {
 		infoLog.Printf("Starting server with flag %s, port used is %s", f.Name, f.Value)
 	})
 
-	routerMiddleware := DBMiddleware(app.routes(), db)
+	routerMiddleware := dbase.DBMiddleware(app.routes(), db)
 
 	srv := &http.Server{
 		Addr:     cfg.port,

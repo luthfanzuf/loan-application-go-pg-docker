@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	z "vanilla-loan-application/ctx"
+	ctx "vanilla-loan-application/ctx"
 
 	"gorm.io/gorm"
 )
@@ -43,10 +43,12 @@ func CreateLoanApplication(rw http.ResponseWriter, r *http.Request) {
 
 		json.NewDecoder(r.Body).Decode(&applicationObj)
 
+		// kalkulasi data berdasarkan data di request body
 		totalInterest := int64(float32(applicationObj.Nominal_borrowed) * applicationObj.Annual_interest_rate)
 		totalToPay := applicationObj.Nominal_borrowed + totalInterest
 		paymentPerMonth := totalToPay / applicationObj.Loan_period_m
 
+		// membuat object baru untuk di insert
 		loanToInsert := LoanApplication{
 			Loan_type:            applicationObj.Loan_type,
 			Customer_id:          applicationObj.Customer_id,
@@ -66,7 +68,7 @@ func CreateLoanApplication(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
@@ -85,6 +87,7 @@ func CreateLoanApplication(rw http.ResponseWriter, r *http.Request) {
 
 		// ##############################################################
 
+		// show response
 		json.NewEncoder(rw).Encode(loanToInsert)
 
 	}
@@ -97,16 +100,19 @@ func GetAllLoanApplication(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Access-Control-Allow-Origin", "*")
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
 		}
 
+		// array of object
 		var arrLoanApplication []LoanApplication
 
+		// gorm get all
 		result := db.Find(&arrLoanApplication)
 
+		// error handling
 		if err := result.Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				json.NewEncoder(rw).Encode(arrLoanApplication)
@@ -119,6 +125,7 @@ func GetAllLoanApplication(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// show response
 		json.NewEncoder(rw).Encode(arrLoanApplication)
 
 	}
@@ -130,11 +137,12 @@ func UpdateLoanApplication(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")
 		rw.Header().Add("Access-Control-Allow-Origin", "*")
 
+		// mendapatkan id yang mau diedit
 		query := r.URL.Query()
 		idToEdit, _ := strconv.Atoi(query.Get("id"))
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
@@ -153,11 +161,12 @@ func UpdateLoanApplication(rw http.ResponseWriter, r *http.Request) {
 		newNominalBorrowed := newLoanObj.Nominal_borrowed
 		newLoanPeriod := newLoanObj.Loan_period_m
 
-		//calcualtion change
+		//kalkulasi perubahan data
 		totalInterest := int64(float32(newLoanObj.Nominal_borrowed) * oldLoanObj.Annual_interest_rate)
 		totalToPay := newNominalBorrowed + totalInterest
 		paymentPerMonth := totalToPay / newLoanPeriod
 
+		// gorm update
 		db.Model(oldLoanObj).Updates(LoanApplication{
 			Monthly_income:     newMonthlyIncome,
 			Nominal_borrowed:   newNominalBorrowed,
@@ -179,6 +188,7 @@ func DeleteLoanApplication(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")
 		rw.Header().Add("Access-Control-Allow-Origin", "*")
 
+		// mendapatkan id object yg akan di delete dengan query strings
 		query := r.URL.Query()
 		idToDelete, _ := strconv.Atoi(query.Get("id"))
 
@@ -186,27 +196,21 @@ func DeleteLoanApplication(rw http.ResponseWriter, r *http.Request) {
 			Application_id: idToDelete,
 		}
 
+		// console log id yg akan didelete
 		log.Printf("Delete loan handler is triggered for id :%s", strconv.Itoa(idToDelete))
 
 		// access context db ###########################################
-		db, ok := r.Context().Value(z.DBContext).(*gorm.DB)
+		db, ok := r.Context().Value(ctx.DBContext).(*gorm.DB)
 		if !ok {
 			fmt.Println("something is broke with http dbcontext")
 			panic("failed passing context to create handler")
 		}
 
+		// gorm delete
 		db.Delete(&LoanApplication{}, idToDelete)
 
+		// show response
 		json.NewEncoder(rw).Encode(loanToDelete)
-
-		// for index, obj := range arrLoan {
-		// 	if obj.Application_id == idToDelete {
-		// 		// splice and replace the todo
-		// 		arrLoan = append(arrLoan[:index], arrLoan[index+1:]...)
-
-		// 		json.NewEncoder(rw).Encode(arrLoan[index])
-		// 	}
-		// }
 
 	}
 
